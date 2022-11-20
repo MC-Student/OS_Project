@@ -22,6 +22,7 @@ public class Client
 
     public static void main(String[] args)
     {
+        //TODO: Chana: fix if 1. wrong job type 2. wrong id type 3. no id 4. no job type 5. nothing
         // Hardcode in IP and Port here if required
         args = new String[]{"127.0.0.1", "30121"};
 
