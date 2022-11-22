@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 public class Client
 {
@@ -19,7 +20,6 @@ public class Client
               When confirm job is complete, tell user
               */
     private int jobCounter;
-
     public static void main(String[] args)
     {
         //TODO: Chana: fix if 1. wrong job type 2. wrong id type 3. no id 4. no job type 5. nothing
@@ -48,20 +48,15 @@ public class Client
         )
         {
             //https://stackoverflow.com/questions/49709070/java-application-that-will-listen-for-user-input-in-a-loop-without-pausing
-
-            while(true)
-            {
-                //send job one to the master
+           System.out.println("Please enter a job type + id or type quit to exit: ");
+            while(true){
                 String userInput = stdIn.readLine();
-                String[] userInfo = userInput.split(" ");
-
-                if (validateInput(userInfo))
-                {
-                    sendJobToMaster(requestWriter, userInput, userInfo);
-                }
-                else
-                {
+                if(userInput.equals("quit")){//loop ends with "quit" or when hit 100, to keep things contained
                     break;
+                }
+                else if (validateInput(userInput))// validate the string
+                {
+                    sendJobToMaster(requestWriter, userInput);//send it to master
                 }
             }
         }
@@ -78,36 +73,39 @@ public class Client
         }
     }
 
-    private static void sendJobToMaster(PrintWriter requestWriter, String userInput, String[] userInfo)
+    private static void sendJobToMaster(PrintWriter requestWriter, String userInput)
     {
         requestWriter.println(userInput);
-        System.out.println("Sent job type " + userInfo[0] + " with ID " + userInfo[1]);
+        System.out.println("Sent job " + userInput + " to user");
     }
 
-    private static boolean validateInput(String[] userInfo)
+    private static boolean validateInput(String userInput)
     {
         boolean valid = false;
 
-        if (userInfo[0].equalsIgnoreCase("a") || userInfo[0].equalsIgnoreCase("b"))
-        {
-            try
+        if(userInput == null || userInput.equals(" ") || userInput.equals("")){
+            System.out.println("User input null, please enter valid input: ");// null error message, ignore input
+        } else{
+            String [] userInfo = userInput.split(" ");
+            if (userInfo[0].equalsIgnoreCase("a") || userInfo[0].equalsIgnoreCase("b"))
             {
-                int id = Integer.parseInt(userInfo[1]);
-                valid = true;
+                try
+                {
+                    int id = Integer.parseInt(userInfo[1]);
+                    valid = true;// id & type are valid, we send input to master
+                }
+                catch (NumberFormatException e)
+                {
+                    System.out.println("Invalid id for input: " + userInfo[1]);// invalid id error message, ignore input
+                }
             }
-            catch (NumberFormatException e)
+            else
             {
-                System.out.println("The id is not valid: " + e);
+                System.out.println("Invalid job type for input: " + userInfo[0] );// invalid type error message, ignore input
             }
         }
-        else
-        {
-            System.out.println("Invalid job type: " + userInfo[0] + "; must be of type A or B");
-        }
-
         return valid;
     }
-
 
 
     /*
