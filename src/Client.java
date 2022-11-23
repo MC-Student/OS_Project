@@ -20,6 +20,7 @@ public class Client
               When confirm job is complete, tell user
               */
     private int jobCounter;
+
     public static void main(String[] args)
     {
         //TODO: Chana: fix if 1. wrong job type 2. wrong id type 3. no id 4. no job type 5. nothing
@@ -48,10 +49,12 @@ public class Client
         )
         {
             //https://stackoverflow.com/questions/49709070/java-application-that-will-listen-for-user-input-in-a-loop-without-pausing
-           System.out.println("Please enter a job type + id or type quit to exit: ");
-            while(true){
+            System.out.println("Please enter a job type + id or type quit to exit: ");
+            while (true)
+            {
                 String userInput = stdIn.readLine();
-                if(userInput.equals("quit")){//loop ends with "quit" or when hit 100, to keep things contained
+                if (userInput.equals("quit"))
+                {//loop ends with "quit" or when hit 100, to keep things contained
                     break;
                 }
                 else if (validateInput(userInput))// validate the string
@@ -83,10 +86,13 @@ public class Client
     {
         boolean valid = false;
 
-        if(userInput == null || userInput.equals(" ") || userInput.equals("")){
+        if (userInput == null || userInput.equals(" ") || userInput.equals(""))
+        {
             System.out.println("User input null, please enter valid input: ");// null error message, ignore input
-        } else{
-            String [] userInfo = userInput.split(" ");
+        }
+        else
+        {
+            String[] userInfo = userInput.split(" ");
             if (userInfo[0].equalsIgnoreCase("a") || userInfo[0].equalsIgnoreCase("b"))
             {
                 try
@@ -101,7 +107,7 @@ public class Client
             }
             else
             {
-                System.out.println("Invalid job type for input: " + userInfo[0] );// invalid type error message, ignore input
+                System.out.println("Invalid job type for input: " + userInfo[0]);// invalid type error message, ignore input
             }
         }
         return valid;

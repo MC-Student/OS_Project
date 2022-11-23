@@ -24,42 +24,103 @@ public class Master
     private int waitTimeA;
     private int waitTimeB;
     private int totalJobsReceived;
-    private int slaveAIncompleteA;
-    private int slaveAIncompleteB;
-    private int estWaitSlaveA = slaveAIncompleteA + slaveAIncompleteB;
-    private int slaveBIncompleteA;
-    private int slaveBIncompleteB;
-    private int estWaitSlaveB = slaveBIncompleteA + slaveBIncompleteB;
+    private static int slaveAIncompleteA;
+    private static int slaveAIncompleteB;
+    private static int estWaitSlaveA = slaveAIncompleteA + slaveAIncompleteB;
+    private static int slaveBIncompleteA;
+    private static int slaveBIncompleteB;
+    private static int estWaitSlaveB = slaveBIncompleteA + slaveBIncompleteB;
 
     public static void main(String[] args)
     {
-        args = new String[]{"30121"};        // Hard code in port number for testing purposes
+        args = new String[]{"30121", "20202", "30404"};        // Hard code in port number for testing purposes
         /*if (args.length != 1) {            // going to eventually take from user
             System.err.println("Error with port");
             System.exit(1);
         }*/
 
         int portNumber = Integer.parseInt(args[0]);
+        int portSlaveA = Integer.parseInt(args[1]);
+        int portSlaveB = Integer.parseInt(args[2]);
+
 
         ArrayList<SimJob> jobsToDo = new ArrayList<>();
-        try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));//master server socket 1 for client, will need for slaves
+
+        try (ServerSocket serverSocket = new ServerSocket(portNumber);//master server socket 1 for client, will need for slaves
+             ServerSocket slaveASocket = new ServerSocket(portSlaveA);//server socket for slave A
+             ServerSocket slaveBSocket = new ServerSocket(portSlaveB);//server socket for slave B
              Socket clientSocket = serverSocket.accept();//accepts connection to client
+             Socket socketA = slaveASocket.accept();//accepts connection to slave A
+             Socket socketB = slaveBSocket.accept();//accepts connection to slave B
              PrintWriter toClient = new PrintWriter(clientSocket.getOutputStream(), true);// sent to client
-             BufferedReader fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))// reads from client
+             BufferedReader fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));// reads from client
+             PrintWriter toSlaveA = new PrintWriter(socketA.getOutputStream(), true);// sent to client
+             BufferedReader fromSlaveA = new BufferedReader(new InputStreamReader(socketA.getInputStream()));// reads from client
+             PrintWriter toSlaveB = new PrintWriter(socketB.getOutputStream(), true);// sent to client
+             BufferedReader fromSlaveB = new BufferedReader(new InputStreamReader(socketB.getInputStream()))// reads from client
         )
         {
             String userInput;
             while ((userInput = fromClient.readLine()) != null)
             {
-                String[] jobInfo = userInput.split(" ");
-                String jobType = jobInfo[0];
-                int jobID = Integer.parseInt(jobInfo[1]);
-                jobCount++;
-                System.out.println(jobCount + " jobs now in process");
-                jobsToDo.add(new SimJob(jobType, jobID));
-                System.out.println("Now these jobs are in process: " + jobsToDo);
-                toClient.println("job " + jobID + " received");
+                getJobs(jobsToDo, toClient, userInput);
+
+                int thisJobIndex = jobCount - 1;
+                SimJob thisJob = jobsToDo.get(thisJobIndex);
+                int thisJobID = thisJob.getJobID();
+
+                if (Math.abs(estWaitSlaveA - estWaitSlaveB) < 10)
+                {
+                    String optimSlave = thisJob.getJobType();
+
+                    System.out.println("Optimal slave for job " + thisJobID + " is Slave " + optimSlave);
+
+                    thisJob.setSlave(optimSlave);
+
+                    if (thisJob.getJobType().equalsIgnoreCase("a"))
+                    {
+                        System.out.println("Master sending Slave A job type A");
+                        toSlaveA.println("a");
+                    }
+                    else if (thisJob.getJobType().equalsIgnoreCase("b"))
+                    {
+                        System.out.println("Master sending Slave B job type B");
+                        toSlaveB.println("b");
+                    }
+
+                    System.out.println("Sent job " + thisJobID + " to optimal slave");
+                }
+
+                else
+                {
+                    String nonOptimSlave;
+
+                    if(estWaitSlaveA < estWaitSlaveB)
+                    {
+                        nonOptimSlave = "a";
+                    }
+                    else
+                    {
+                        nonOptimSlave = "b";
+                    }
+
+                    thisJob.setSlave(nonOptimSlave);
+
+                    if (thisJob.getSlave().equalsIgnoreCase("a"))
+                    {
+                        System.out.println("sending job " + thisJobID + "to Slave A - unoptimized");
+                        toSlaveA.println(thisJob.getJobType());
+                    }
+                    else if (thisJob.getJobType().equalsIgnoreCase("b"))
+                    {
+                        System.out.println("sending job " + thisJobID + "to Slave B - unoptimized");
+                        toSlaveB.println(thisJob.getJobType());
+                    }
+
+                    System.out.println("Sent job " + thisJobID + " to non-optimal slave (current quickest slave)");
+                }
             }
+
 
         }
 
@@ -83,6 +144,18 @@ public class Master
             System.out.println("Exception caught when trying to listen on port " + portNumber + " or listening for a connection");
             System.out.println(e.getMessage());
         }
+    }
+
+    private static void getJobs(ArrayList<SimJob> jobsToDo, PrintWriter toClient, String userInput)
+    {
+        String[] jobInfo = userInput.split(" ");
+        String jobType = jobInfo[0];
+        int jobID = Integer.parseInt(jobInfo[1]);
+        jobCount++;
+        System.out.println(jobCount + " jobs now in process");
+        jobsToDo.add(new SimJob(jobType, jobID));
+        System.out.println("Now these jobs are in process: " + jobsToDo);
+        toClient.println("job " + jobID + " received");
     }
     /*
     THREADING:

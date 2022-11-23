@@ -10,11 +10,13 @@ public class SimJob
     
     private int jobID;
     private String jobType;
+    private String slave;
     
     public SimJob(String type, int id)
     {
         jobType = type;
         jobID = id;
+        slave = null;
     }
 
     public int getJobID()
@@ -27,4 +29,13 @@ public class SimJob
         return jobType;
     }
 
+    public void setSlave(String slaveType)
+    {
+        slave = slaveType;
+    }
+
+    public String getSlave()
+    {
+        return slave;
+    }
 }
