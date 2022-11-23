@@ -63,62 +63,8 @@ public class Master
             String userInput;
             while ((userInput = fromClient.readLine()) != null)
             {
-                getJobs(jobsToDo, toClient, userInput);
-
-                int thisJobIndex = jobCount - 1;
-                SimJob thisJob = jobsToDo.get(thisJobIndex);
-                int thisJobID = thisJob.getJobID();
-
-                if (Math.abs(estWaitSlaveA - estWaitSlaveB) < 10)
-                {
-                    String optimSlave = thisJob.getJobType();
-
-                    System.out.println("Optimal slave for job " + thisJobID + " is Slave " + optimSlave);
-
-                    thisJob.setSlave(optimSlave);
-
-                    if (thisJob.getJobType().equalsIgnoreCase("a"))
-                    {
-                        System.out.println("Master sending Slave A job type A");
-                        toSlaveA.println("a");
-                    }
-                    else if (thisJob.getJobType().equalsIgnoreCase("b"))
-                    {
-                        System.out.println("Master sending Slave B job type B");
-                        toSlaveB.println("b");
-                    }
-
-                    System.out.println("Sent job " + thisJobID + " to optimal slave");
-                }
-
-                else
-                {
-                    String nonOptimSlave;
-
-                    if(estWaitSlaveA < estWaitSlaveB)
-                    {
-                        nonOptimSlave = "a";
-                    }
-                    else
-                    {
-                        nonOptimSlave = "b";
-                    }
-
-                    thisJob.setSlave(nonOptimSlave);
-
-                    if (thisJob.getSlave().equalsIgnoreCase("a"))
-                    {
-                        System.out.println("sending job " + thisJobID + "to Slave A - unoptimized");
-                        toSlaveA.println(thisJob.getJobType());
-                    }
-                    else if (thisJob.getJobType().equalsIgnoreCase("b"))
-                    {
-                        System.out.println("sending job " + thisJobID + "to Slave B - unoptimized");
-                        toSlaveB.println(thisJob.getJobType());
-                    }
-
-                    System.out.println("Sent job " + thisJobID + " to non-optimal slave (current quickest slave)");
-                }
+                getJob(jobsToDo, toClient, userInput);
+                sendToASlave(jobsToDo, toSlaveA, toSlaveB);
             }
 
 
@@ -146,7 +92,77 @@ public class Master
         }
     }
 
-    private static void getJobs(ArrayList<SimJob> jobsToDo, PrintWriter toClient, String userInput)
+    private static void sendToASlave(ArrayList<SimJob> jobsToDo, PrintWriter toSlaveA, PrintWriter toSlaveB)
+    {
+        int thisJobIndex = jobCount - 1;
+        SimJob thisJob = jobsToDo.get(thisJobIndex);
+        int thisJobID = thisJob.getJobID();
+
+        if (Math.abs(estWaitSlaveA - estWaitSlaveB) < 10)
+        {
+            sendToOptimal(toSlaveA, toSlaveB, thisJob, thisJobID);
+        }
+
+        else
+        {
+            sendToNonOptimal(toSlaveA, toSlaveB, thisJob, thisJobID);
+        }
+    }
+
+    private static void sendToNonOptimal(PrintWriter toSlaveA, PrintWriter toSlaveB, SimJob thisJob, int thisJobID)
+    {
+        String nonOptimSlave;
+
+        if(estWaitSlaveA < estWaitSlaveB)
+        {
+            nonOptimSlave = "a";
+        }
+        else
+        {
+            nonOptimSlave = "b";
+        }
+
+        thisJob.setSlave(nonOptimSlave);
+
+        if (thisJob.getSlave().equalsIgnoreCase("a"))
+        {
+            System.out.println("sending job " + thisJobID + "to Slave A - unoptimized");
+            toSlaveA.println(thisJob.getJobType());
+        }
+        else if (thisJob.getJobType().equalsIgnoreCase("b"))
+        {
+            System.out.println("sending job " + thisJobID + "to Slave B - unoptimized");
+            toSlaveB.println(thisJob.getJobType());
+        }
+
+        System.out.println("Sent job " + thisJobID + " to non-optimal slave (current quickest slave)");
+    }
+
+    private static void sendToOptimal(PrintWriter toSlaveA, PrintWriter toSlaveB, SimJob thisJob, int thisJobID)
+    {
+        String optimSlave = thisJob.getJobType();
+
+        System.out.println("Optimal slave for job " + thisJobID + " is Slave " + optimSlave);
+
+        thisJob.setSlave(optimSlave);
+
+        if (thisJob.getJobType().equalsIgnoreCase("a"))
+        {
+            System.out.println("Master sending Slave A job type A");
+            toSlaveA.println("a");
+            //TODO: send as object, not as string - Chana
+        }
+        else if (thisJob.getJobType().equalsIgnoreCase("b"))
+        {
+            System.out.println("Master sending Slave B job type B");
+            toSlaveB.println("b");
+            //TODO: send as object, not as string - Chana
+        }
+
+        System.out.println("Sent job " + thisJobID + " to optimal slave");
+    }
+
+    private static void getJob(ArrayList<SimJob> jobsToDo, PrintWriter toClient, String userInput)
     {
         String[] jobInfo = userInput.split(" ");
         String jobType = jobInfo[0];

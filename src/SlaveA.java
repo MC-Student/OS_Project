@@ -31,6 +31,8 @@ public class SlaveA
 
             String jobReceived;
 
+            //TODO: Figure out why slaves not receiving jobs - MT
+
             while ((jobReceived = fromMaster.readLine()) != null)
             {
                 if (jobReceived.equalsIgnoreCase("a"))
