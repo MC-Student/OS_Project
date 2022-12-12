@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
@@ -34,32 +31,31 @@ public class Client
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
 
+        final Scanner keyboard = new Scanner(System.in);
+
         try (
                 Socket clientSocket = new Socket(hostName, portNumber);
-                PrintWriter requestWriter = // stream to write text requests to server
-                        new PrintWriter(clientSocket.getOutputStream(), true);
-                BufferedReader responseReader = // stream to read text response from server
-                        new BufferedReader(
-                                new InputStreamReader(clientSocket.getInputStream()));
-                BufferedReader stdIn = // standard input stream to get user's requests
-                        new BufferedReader(
-                                new InputStreamReader(System.in))
+                ObjectOutputStream toHandler = new ObjectOutputStream(clientSocket.getOutputStream());
+                ObjectInputStream fromHandler = new ObjectInputStream(clientSocket.getInputStream());
         )
         {
-            //https://stackoverflow.com/questions/49709070/java-application-that-will-listen-for-user-input-in-a-loop-without-pausing
-            System.out.println("Please enter a job type + id or type quit to exit: ");
-            while (true)
+            System.out.println(fromHandler.readUTF());
+            String userInput = keyboard.nextLine();
+            toHandler.writeUTF(userInput);
+
+
+            if (userInput.equalsIgnoreCase("quit"))
             {
-                String userInput = stdIn.readLine();
-                if (userInput.equals("quit"))
-                {//loop ends with "quit" or when hit 100, to keep things contained
-                    break;
-                }
-                else if (validateInput(userInput))// validate the string
-                {
-                    sendJobToMaster(requestWriter, userInput);//send it to master
-                }
+                System.out.println("Closing this connection : " + clientSocket);
+                clientSocket.close();
+                System.out.println("Connection closed");
             }
+            else
+            {
+                SimJob received = (SimJob) fromHandler.readObject();
+                System.out.println("Going to submit job " + received.getJobID() + " to Master");
+            }
+
         }
         catch (UnknownHostException e)
         {
@@ -71,6 +67,10 @@ public class Client
             System.err.println("Couldn't get I/O for the connection to " +
                     hostName);
             System.exit(1);
+        }
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
         }
     }
 

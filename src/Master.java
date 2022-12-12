@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -40,33 +37,66 @@ public class Master
         }*/
 
         int portNumber = Integer.parseInt(args[0]);
-        int portSlaveA = Integer.parseInt(args[1]);
-        int portSlaveB = Integer.parseInt(args[2]);
-
+       /* int portSlaveA = Integer.parseInt(args[1]);
+        int portSlaveB = Integer.parseInt(args[2]);*/
 
         ArrayList<SimJob> jobsToDo = new ArrayList<>();
 
         try (ServerSocket serverSocket = new ServerSocket(portNumber);//master server socket 1 for client, will need for slaves
-             ServerSocket slaveASocket = new ServerSocket(portSlaveA);//server socket for slave A
-             ServerSocket slaveBSocket = new ServerSocket(portSlaveB);//server socket for slave B
-             Socket clientSocket = serverSocket.accept();//accepts connection to client
-             Socket socketA = slaveASocket.accept();//accepts connection to slave A
+             //accepts connection to client
+             /*ServerSocket slaveASocket = new ServerSocket(portSlaveA);//server socket for slave A
+             ServerSocket slaveBSocket = new ServerSocket(portSlaveB);//server socket for slave B*/
+             /*Socket socketA = slaveASocket.accept();//accepts connection to slave A
              Socket socketB = slaveBSocket.accept();//accepts connection to slave B
-             PrintWriter toClient = new PrintWriter(clientSocket.getOutputStream(), true);// sent to client
-             BufferedReader fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));// reads from client
              PrintWriter toSlaveA = new PrintWriter(socketA.getOutputStream(), true);// sent to client
              BufferedReader fromSlaveA = new BufferedReader(new InputStreamReader(socketA.getInputStream()));// reads from client
              PrintWriter toSlaveB = new PrintWriter(socketB.getOutputStream(), true);// sent to client
              BufferedReader fromSlaveB = new BufferedReader(new InputStreamReader(socketB.getInputStream()))// reads from client
-        )
+        */)
         {
-            String userInput;
-            while ((userInput = fromClient.readLine()) != null)
+            while(true)
             {
-                getJob(jobsToDo, toClient, userInput);
-                sendToASlave(jobsToDo, toSlaveA, toSlaveB);
+                Socket clientSocket = null;
+
+                try
+                {
+                    clientSocket = serverSocket.accept();
+
+                    System.out.println("A new client is connected: " + clientSocket);
+
+                    // obtaining input and out streams
+                    ObjectInputStream dis = new ObjectInputStream(clientSocket.getInputStream());
+                    ObjectOutputStream dos = new ObjectOutputStream(clientSocket.getOutputStream());
+
+                    System.out.println("Assigning new thread for this client");
+
+                    // create a new thread object
+                    Thread newClient = new ClientHandler(dis, dos, clientSocket);
+
+                    System.out.println("Made new thread");
+
+                    // Invoking the start() method
+                    newClient.start();
+                    System.out.println("Started thread " + newClient);
+                }
+
+                catch (Exception e)
+                {
+                    assert clientSocket != null;
+                    clientSocket.close();
+                    e.printStackTrace();
+                }
+
+                break;
             }
 
+
+            /*while (newClient.isAlive())
+            {
+                System.out.println("Client " + newClient + " is alive");
+                //getJob(jobsToDo, toClient, userInput);
+                //sendToASlave(jobsToDo, toSlaveA, toSlaveB);
+            }*/
 
         }
 
