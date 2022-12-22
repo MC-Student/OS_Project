@@ -27,29 +27,44 @@ public class ClientHandler extends Thread
         {
             try
             {
-
                 // Ask user what he wants
                 toClient.writeUTF("To submit a job, enter job type (A or B) followed by a space and job ID (number). Type quit to exit.");
                 toClient.flush();
 
-                // receive the answer from client
-                received = fromClient.readUTF();
-
-                if (received.equalsIgnoreCase("quit"))
+                while (true)
                 {
-                    System.out.println("Client " + this.connectToClient + " sends exit...");
-                    System.out.println("Closing this connection.");
-                    this.connectToClient.close();
-                    System.out.println("Connection closed");
-                    break;
-                }
+                    // receive the answer from client
+                    received = fromClient.readUTF();
 
-                // write job object to output stream if the input is valid
+                    if (received.equalsIgnoreCase("quit"))
+                    {
+                        System.out.println("Client " + this.connectToClient + " sends exit...");
+                        System.out.println("Closing this connection.");
+                        this.connectToClient.close();
+                        System.out.println("Connection closed");
+                        break;
+                    }
 
-                else if (validateInput(received))
-                {
-                    createJob(toClient, received);
+                    // write job object to output stream if the input is valid
+
+                    else if (validateInput(received))
+                    {
+                        toClient.writeUTF(received);
+                        toClient.flush();
+                    }
+
                 }
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            try
+            {
+                // closing resources
+                this.fromClient.close();
+                this.toClient.close();
 
             }
             catch (IOException e)
@@ -58,17 +73,6 @@ public class ClientHandler extends Thread
             }
         }
 
-        try
-        {
-            // closing resources
-            this.fromClient.close();
-            this.toClient.close();
-
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
     }
 
     private static boolean validateInput(String userInput)
@@ -100,23 +104,5 @@ public class ClientHandler extends Thread
             }
         }
         return valid;
-    }
-
-    private static void createJob(ObjectOutputStream toClient, String received)
-    {
-        try
-        {
-            String[] jobInfo = received.split(" ");
-            String jobType = jobInfo[0];
-            int jobID = Integer.parseInt(jobInfo[1]);
-            SimJob toReturn = new SimJob(jobType, jobID);
-            toClient.writeObject(toReturn);
-            toClient.flush();
-            System.out.println("Sent job " + toReturn.getJobID() + " back to client to be sent to Master");
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
     }
 }

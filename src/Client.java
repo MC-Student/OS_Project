@@ -5,17 +5,6 @@ import java.util.Scanner;
 
 public class Client
 {
-    /*
-              Instance Variable:
-                      jobCounter
-              Create a job based on user input
-                  Tell user job request has been received by client
-                  Pass user input and incremented jobCounter as String and int to new SimJob
-                  Tell user that job has been created
-              Send job to master
-              Tell user job was sent to master "server"
-              When confirm job is complete, tell user
-              */
     private int jobCounter;
 
     public static void main(String[] args)
@@ -39,9 +28,11 @@ public class Client
                 ObjectInputStream fromHandler = new ObjectInputStream(clientSocket.getInputStream());
         )
         {
+
             System.out.println(fromHandler.readUTF());
             String userInput = keyboard.nextLine();
-            toHandler.writeUTF(userInput);
+            toHandler.writeUTF(userInput); //writeObject
+            toHandler.flush();//TODO: added last
 
 
             if (userInput.equalsIgnoreCase("quit"))
@@ -52,8 +43,12 @@ public class Client
             }
             else
             {
-                SimJob received = (SimJob) fromHandler.readObject();
-                System.out.println("Going to submit job " + received.getJobID() + " to Master");
+                String received = fromHandler.readUTF();
+                String[] jobInfo = received.split(" ");
+                String jobType = jobInfo[0];
+                int jobID = Integer.parseInt(jobInfo[1]);
+                SimJob readyJob = new SimJob(jobType, jobID);
+                System.out.println("Going to submit job " + readyJob.getJobID() + " to Master");
             }
 
         }
@@ -67,10 +62,6 @@ public class Client
             System.err.println("Couldn't get I/O for the connection to " +
                     hostName);
             System.exit(1);
-        }
-        catch (ClassNotFoundException e)
-        {
-            e.printStackTrace();
         }
     }
 
@@ -110,21 +101,4 @@ public class Client
         }
         return valid;
     }
-
-
-    /*
-    Clients are going to connect directly to the master and submit jobs of either type.
-    The clients submission should include
-    1. the type,
-    2. an ID number that will be used to identify the job throughout the system.
-    */
-
-    /*
-    CLASS: SimJob holds the job we are sending between client/server
-    //Send jobs to Master
-    //Confirm submission of jobs
-    //Receive message that job is complete
-    //Communicate completion to user
-    //Communicate each step of process as it is happening to user
-    */
 }

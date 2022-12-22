@@ -42,7 +42,7 @@ public class Master
 
         ArrayList<SimJob> jobsToDo = new ArrayList<>();
 
-        try (ServerSocket serverSocket = new ServerSocket(portNumber);//master server socket 1 for client, will need for slaves
+        try (ServerSocket serverSocket = new ServerSocket(portNumber)//master server socket 1 for client, will need for slaves
              //accepts connection to client
              /*ServerSocket slaveASocket = new ServerSocket(portSlaveA);//server socket for slave A
              ServerSocket slaveBSocket = new ServerSocket(portSlaveB);//server socket for slave B*/
@@ -54,7 +54,7 @@ public class Master
              BufferedReader fromSlaveB = new BufferedReader(new InputStreamReader(socketB.getInputStream()))// reads from client
         */)
         {
-            while(true)
+            while (true)
             {
                 Socket clientSocket = null;
 
@@ -65,13 +65,13 @@ public class Master
                     System.out.println("A new client is connected: " + clientSocket);
 
                     // obtaining input and out streams
-                    ObjectInputStream dis = new ObjectInputStream(clientSocket.getInputStream());
-                    ObjectOutputStream dos = new ObjectOutputStream(clientSocket.getOutputStream());
+                    ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
+                    ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
 
                     System.out.println("Assigning new thread for this client");
 
                     // create a new thread object
-                    Thread newClient = new ClientHandler(dis, dos, clientSocket);
+                    Thread newClient = new ClientHandler(ois, oos, clientSocket);
 
                     System.out.println("Made new thread");
 
@@ -86,7 +86,6 @@ public class Master
                     clientSocket.close();
                     e.printStackTrace();
                 }
-
                 break;
             }
 
@@ -99,21 +98,6 @@ public class Master
             }*/
 
         }
-
-            /*
-                Receive jobs from clients via socket and inform console
-                    update total jobs received
-
-                Check current wait time for each slave
-                If |wait time on A - wait time on B| < 10
-                    Assign job to its optimized slave and inform console
-                Else
-                    Assign job to slave with least wait time and inform console
-
-                Get message back from slave that job completes and inform console
-                inform client that job completed via socket
-            */
-        // send jobCount to client as test upon request
 
         catch (IOException e)
         {
@@ -203,13 +187,4 @@ public class Master
         System.out.println("Now these jobs are in process: " + jobsToDo);
         toClient.println("job " + jobID + " received");
     }
-    /*
-    THREADING:
-    The master will require at least
-    one thread for each program with which it communicates.
-     So to truly make your program robust you will probably want a
-     separate thread for every direction in which a message can be sent
-     All communication between threads will use shared memory
-     objects with appropriate locking as discussed in the class lectures.
-    */
 }
