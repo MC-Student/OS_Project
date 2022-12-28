@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class Master
@@ -13,8 +14,10 @@ public class Master
     {
         try
         {
-            ServerSocket client1Socket = new ServerSocket(Integer.parseInt(args[1]));
+            ServerSocket socketForClient = new ServerSocket(Integer.parseInt(args[1]));
             System.out.println("Master opened port " + args[1] + " for client1");
+
+            Socket mClientSocket = socketForClient.accept();
 
             ServerSocket client2Socket = new ServerSocket(Integer.parseInt(args[2]));
             System.out.println("Master opened port " + args[2] + " for client2");
@@ -24,6 +27,8 @@ public class Master
 
             ServerSocket slaveBSocket = new ServerSocket(Integer.parseInt(args[4]));
             System.out.println("Master opened port " + args[4] + " for Slave B");
+
+
         }
         catch (IOException e)
         {

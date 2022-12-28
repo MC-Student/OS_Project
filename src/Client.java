@@ -20,7 +20,7 @@ Client main (outside of threads),  then add to list while synchronizing on the l
 
         try
         {
-            Socket mcConnection = new Socket("127.0.0.1", port);
+            Socket mcConnection = new Socket(args[0], port);
         }
         catch (IOException e)
         {
@@ -85,8 +85,15 @@ Client main (outside of threads),  then add to list while synchronizing on the l
             {
                 try
                 {
-                    Integer.parseInt(userInfo[1]);
-                    valid = true;
+                    if (userInfo.length < 2)
+                    {
+                        System.out.println("Not enough information - enter a type and ID");
+                    }
+                    else
+                    {
+                        Integer.parseInt(userInfo[1]);
+                        valid = true;
+                    }
                 }
                 catch (NumberFormatException e)
                 {
