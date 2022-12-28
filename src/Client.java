@@ -54,7 +54,7 @@ Client main (outside of threads),  then add to list while synchronizing on the l
             {
                 if (validInput(input))
                 {
-                    Job newJob = new Job(/*add from input here, TODO: need to add back parameters to create new Job*/);
+                    Job newJob = new Job(input);
 
                     synchronized (jToDo_LOCK)
                     {
