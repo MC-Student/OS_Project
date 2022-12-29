@@ -6,13 +6,9 @@ import java.util.Scanner;
 
 public class Client
 {
-    /*
-Client main (outside of threads),  then add to list while synchronizing on the list.
-*/
     public static ArrayList<Job> jobsToDo = new ArrayList<>(); //public so can be shared with its thread to master
     public static final Object jToDo_LOCK = new Object();
     public static ObjectOutputStream clientOutput = null;
-    public static final Object stream_LOCK = new Object();
 
     private static final Scanner keyboard = new Scanner(System.in);
     private static final String message = "Please enter a job type followed by a job ID, e.g. \"a 1234.\" Enter \"quit\" any time to exit.";
@@ -42,18 +38,10 @@ Client main (outside of threads),  then add to list while synchronizing on the l
             e.printStackTrace();
         }
 
-        Thread clientToMaster = new ClientToMaster(jobsToDo, jToDo_LOCK, clientOutput, stream_LOCK);
-        Thread clientFromMaster = new clientFromMaster();
+        Thread clientToMaster = new ClientToMaster(jobsToDo, jToDo_LOCK, clientOutput);
+        //Thread clientFromMaster = new ClientFromMaster();
 
-        try
-        {
-            clientToMaster.join();
-            clientFromMaster.join();
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
+        clientToMaster.start();
 
         while (true)
         {
@@ -82,6 +70,17 @@ Client main (outside of threads),  then add to list while synchronizing on the l
                 }
             }
         }
+
+        /*try
+        {
+            clientToMaster.join();
+            clientFromMaster.join();
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }*/
+
     }
 
     private static boolean validInput(String input)

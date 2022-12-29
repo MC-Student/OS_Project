@@ -1,4 +1,4 @@
-public class clientFromMaster extends Thread
+public class ClientFromMaster extends Thread
 {
     /*
     * takes in input stream of jobs from client

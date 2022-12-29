@@ -1,5 +1,12 @@
-public class masterFromClient2 extends Thread
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
+
+public class MasterFromClient2 extends Thread
 {
+    public MasterFromClient2(ArrayList<Job> incomingJobs, Object incJobs_lock, ObjectInputStream ois2)
+    {
+
+    }
     /*
      * Takes in:
      *   1. masterInputStream
