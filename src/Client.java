@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -8,8 +9,10 @@ public class Client
     /*
 Client main (outside of threads),  then add to list while synchronizing on the list.
 */
-    static ArrayList<Job> jobsToDo = new ArrayList<>();
-    private static final Object jToDo_LOCK = new Object();
+    public static ArrayList<Job> jobsToDo = new ArrayList<>(); //public so can be shared with its thread to master
+    public static final Object jToDo_LOCK = new Object();
+    public static ObjectOutputStream clientOutput = null;
+    public static final Object stream_LOCK = new Object();
 
     private static final Scanner keyboard = new Scanner(System.in);
     private static final String message = "Please enter a job type followed by a job ID, e.g. \"a 1234.\" Enter \"quit\" any time to exit.";
@@ -18,16 +21,28 @@ Client main (outside of threads),  then add to list while synchronizing on the l
     {
         int port = getPort(args);
 
+        Socket mcConnection = null;
         try
         {
-            Socket mcConnection = new Socket(args[0], port);
+            mcConnection = new Socket(args[0], port);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            System.out.println("Could not connect");
+            System.exit(9);
+        }
+
+        try
+        {
+            clientOutput = new ObjectOutputStream(mcConnection.getOutputStream());
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
 
-        Thread clientToMaster = new clientToMaster();
+        Thread clientToMaster = new ClientToMaster(jobsToDo, jToDo_LOCK, clientOutput, stream_LOCK);
         Thread clientFromMaster = new clientFromMaster();
 
         try
