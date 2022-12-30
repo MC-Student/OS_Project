@@ -20,29 +20,30 @@ public class MasterFromClient1 extends Thread
     @Override
     public void run()
     {
-        try
+        while (true)
         {
-            while (true)
+            Job incoming = null;
+            try
             {
-                Job incoming = (Job) ois.readObject();
+                incoming = (Job) ois.readObject();
+            }
+            catch (IOException | ClassNotFoundException e)
+            {
+                e.printStackTrace();
+            }
 
-                if (incoming != null)
+            if (incoming != null)
+            {
+
+                System.out.println(client + " read object");
+
+                synchronized (ij_LOCK)
                 {
-
-                    System.out.println(client + " read object");
-
-                    synchronized (ij_LOCK)
-                    {
-                        System.out.println(client + " entered synchronized block");
-                        incomingJobs.add(incoming);
-                        System.out.println("Received job from " + client + " and added job with ID " + incoming.getId() + " to list");
-                    }
+                    System.out.println(client + " entered synchronized block");
+                    incomingJobs.add(incoming);
+                    System.out.println("Received job from " + client + " and added job with ID " + incoming.getId() + " to list");
                 }
             }
-        }
-        catch (IOException | ClassNotFoundException e)
-        {
-            e.printStackTrace();
         }
     }
 }

@@ -1,14 +1,41 @@
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+
 public class slaveBToMaster extends Thread
 {
-    /*
-     * It takes in:
-     *   1. jobs completedB arraylist
-     *   2. lock on the arraylist
-     *   3. slaveB socket output stream back to master
-     *
-     * while(true)
-     *   synch on completedB arraylist
-     *       remove first job from list
-     *   send back to master via output stream
-     * */
+    ArrayList<Job> done;
+    final Object lock;
+    ObjectOutputStream toMaster;
+
+    public slaveBToMaster(ArrayList<Job> done, Object lock, ObjectOutputStream toMaster)
+    {
+        this.done = done;
+        this.lock = lock;
+        this.toMaster = toMaster;
+    }
+
+    @Override
+    public void run()
+    {
+        while (true)
+        {
+            Job doneJ;
+
+            synchronized (lock)
+            {
+                doneJ = done.get(0);
+            }
+
+            try
+            {
+                toMaster.writeObject(doneJ);
+            }
+            catch (IOException e)
+            {
+                System.out.println("Slave B could not send back completed job " + doneJ.getId() + " to Master");
+                e.printStackTrace();
+            }
+        }
+    }
 }
