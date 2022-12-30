@@ -20,21 +20,44 @@ public class slaveAToMaster extends Thread
     {
         while (true)
         {
-            Job doneJ;
-
+            boolean toDo = true;
             synchronized (lock)
             {
-                doneJ = done.get(0);
+                if(done.isEmpty())
+                {
+                    toDo = false;
+                }
             }
 
-            try
+            if(toDo)
             {
-                toMaster.writeObject(doneJ);
+                Job doneJ;
+                synchronized (lock)
+                {
+                    doneJ = done.get(0);
+                }
+
+                try
+                {
+                    toMaster.writeObject(doneJ);
+                }
+                catch (IOException e)
+                {
+                    System.out.println("Slave A could not send back completed job " + doneJ.getId() + " to Master");
+                    e.printStackTrace();
+                }
             }
-            catch (IOException e)
+            else
             {
-                System.out.println("Slave A could not send back completed job " + doneJ.getId() + " to Master");
-                e.printStackTrace();
+                try
+                {
+                    sleep(2);
+                }
+                catch (InterruptedException e)
+                {
+                    System.out.println("Could not sleep");
+                    e.printStackTrace();
+                }
             }
         }
     }

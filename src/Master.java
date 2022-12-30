@@ -49,7 +49,7 @@ public class Master
             System.out.println("Master opened port 9000 for Slave A");
             Socket mSlaveASocket = slaveASocket.accept();
             System.out.println("Made connection at port 9000");
-            oisSA = new ObjectInputStream(mSlaveASocket.getInputStream());
+            //oisSA = new ObjectInputStream(mSlaveASocket.getInputStream());
             oosSA = new ObjectOutputStream(mSlaveASocket.getOutputStream());
 
             //never gets here - why??? TODO: Fix this bug - needs to work in order to continue!!
@@ -57,7 +57,7 @@ public class Master
             System.out.println("Master opened port 9600 for Slave B");
             Socket mSlaveBSocket = slaveBSocket.accept();
             System.out.println("Made connection at port 9500");
-            oisSB = new ObjectInputStream(mSlaveBSocket.getInputStream());
+            //oisSB = new ObjectInputStream(mSlaveBSocket.getInputStream());
             oosSB = new ObjectOutputStream(mSlaveBSocket.getOutputStream());
 
             Thread mFromClient1 = new MasterFromClient1(incomingJobs, incJobs_LOCK, oisc1, "Client 1");

@@ -4,6 +4,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import static java.lang.Thread.sleep;
+
 public class SlaveA
 {
     public static void main(String[] args)
@@ -54,36 +56,65 @@ public class SlaveA
         fromMaster.start();
         toMaster.start();
 
-        while(true)
+        while (true)
         {
-            Job doNow;
+            boolean jobsToDo = true;
 
             synchronized (toDoA_LOCK)
             {
-                doNow = toCompleteA.get(0);
+                if (toCompleteA.isEmpty())
+                {
+                    jobsToDo = false;
+                }
             }
-            System.out.println("Slave A got next job from to-do list");
 
-            int sleepLength = secondsToSleep(doNow);
-
-            try
+            Job doNow;
+            if (jobsToDo)
             {
-                Thread.sleep(sleepLength);
+                synchronized (toDoA_LOCK)
+                {
+                    doNow = toCompleteA.get(0);
+                }
+                System.out.println("Slave A got next job from to-do list");
+
+                int sleepLength = secondsToSleep(doNow);
+
+                try
+                {
+                    sleep(sleepLength);
+                }
+                catch (InterruptedException e)
+                {
+                    System.out.println("Slave A did not sleep to complete job " + doNow.getId());
+                    e.printStackTrace();
+                }
+
+                System.out.println("Slave A woke up - job " + doNow.getId() + " is complete");
+
+                synchronized (doneA_LOCK)
+                {
+                    completedJobsA.add(doNow);
+                }
+                synchronized (toDoA_LOCK)
+                {
+                    toCompleteA.remove(0);
+                }
+
+                System.out.println("Slave A added job " + doNow.getId() + " to completed list");
             }
-            catch (InterruptedException e)
+
+            else
             {
-                System.out.println("Slave A did not sleep to complete job " + doNow.getId());
-                e.printStackTrace();
+                try
+                {
+                    sleep(2);
+                }
+                catch (InterruptedException e)
+                {
+                    System.out.println("Could not sleep");
+                    e.printStackTrace();
+                }
             }
-
-            System.out.println("Slave A woke up - job " + doNow.getId() + " is complete");
-
-            synchronized (doneA_LOCK)
-            {
-                completedJobsA.add(doNow);
-            }
-
-            System.out.println("Slave A added job " + doNow.getId() + " to completed list");
         }
 
     }

@@ -31,37 +31,65 @@ public class BalanceLoad extends Thread
     {
         while(true)
         {
-            String jobType;
+            boolean jobsToDo = true;
 
             synchronized (jobList_LOCK)
             {
-                jobType = jobsToAssign.get(0).getType();
+                if (jobsToAssign.isEmpty())
+                {
+                    jobsToDo = false;
+                }
             }
 
-            String optimized;
-            int optimizedTime;
-            int nonOptTime;
-
-            if(jobType.equalsIgnoreCase("a"))
+            if(jobsToDo)
             {
-                optimized = "A";
-                optimizedTime = totalTimeA;
-                nonOptTime = totalTimeB;
+
+                String jobType;
+
+                synchronized (jobList_LOCK)
+                {
+                    jobType = jobsToAssign.get(0).getType();
+                }
+
+                String optimized;
+                int optimizedTime;
+                int nonOptTime;
+
+                if (jobType.equalsIgnoreCase("a"))
+                {
+                    optimized = "A";
+                    optimizedTime = totalTimeA;
+                    nonOptTime = totalTimeB;
+                }
+                else
+                {
+                    optimized = "B";
+                    optimizedTime = totalTimeB;
+                    nonOptTime = totalTimeA;
+                }
+
+                if ((optimizedTime + 2) <= (nonOptTime + 10))
+                {
+                    sendToOptimized(optimized);
+                }
+                else
+                {
+                    sendToNonOptimized(optimized);
+                }
+
             }
+
             else
             {
-                optimized = "B";
-                optimizedTime = totalTimeB;
-                nonOptTime = totalTimeA;
-            }
-
-            if((optimizedTime + 2) <= (nonOptTime + 10))
-            {
-                sendToOptimized(optimized);
-            }
-            else
-            {
-                sendToNonOptimized(optimized);
+                try
+                {
+                    sleep(2);
+                }
+                catch (InterruptedException e)
+                {
+                    System.out.println("Could not sleep");
+                    e.printStackTrace();
+                }
             }
         }
     }
