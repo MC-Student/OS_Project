@@ -57,7 +57,7 @@ public class Client
             {
                 if (validInput(input))
                 {
-                    Job newJob = new Job(input);
+                    Job newJob = new Job(input, Integer.parseInt(args[1]));
 
                     synchronized (jToDo_LOCK)
                     {

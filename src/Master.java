@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -10,8 +11,21 @@ public class Master
     final static Object incJobs_LOCK = new Object();
     static ArrayList<Job> finishedJobs;
     final static Object finJobs_LOCK = new Object();
-    static ObjectInputStream ois1 = null;
-    static ObjectInputStream ois2 = null;
+    static int totalTimeA = 0;
+    final static Object timeA_LOCK = new Object();
+    static int totalTimeB = 0;
+    final static Object timeB_LOCK = new Object();
+
+    static ObjectInputStream oisc1 = null;
+    static ObjectInputStream oisc2 = null;
+    static ObjectInputStream oisSA = null;
+    static ObjectInputStream oisSB = null;
+
+    static ObjectOutputStream oosc1 = null;
+    static ObjectOutputStream oosc2 = null;
+    static ObjectOutputStream oosSA = null;
+    static ObjectOutputStream oosSB = null;
+
 
     public static void main(String[] args)
     {
@@ -21,29 +35,40 @@ public class Master
             System.out.println("Master opened port 6000 for client1");
             Socket mClientSocket1 = client1Socket.accept();
             System.out.println("Made connection at port 6000");
-            ois1 = new ObjectInputStream(mClientSocket1.getInputStream());
+            oisc1 = new ObjectInputStream(mClientSocket1.getInputStream());
+            oosc1 = new ObjectOutputStream(mClientSocket1.getOutputStream());
 
             ServerSocket client2Socket = new ServerSocket(7000);
             System.out.println("Master opened port 7000 for client2");
             Socket mClientSocket2 = client2Socket.accept();
             System.out.println("Made connection at port 7000");
-            ois2 = new ObjectInputStream(mClientSocket2.getInputStream());
-
+            oisc2 = new ObjectInputStream(mClientSocket2.getInputStream());
+            oosc2 = new ObjectOutputStream(mClientSocket2.getOutputStream());
 
             ServerSocket slaveASocket = new ServerSocket(9000);
             System.out.println("Master opened port 9000 for Slave A");
+            Socket mSlaveASocket = slaveASocket.accept();
+            System.out.println("Made connection at port 9000");
+            oisSA = new ObjectInputStream(mSlaveASocket.getInputStream());
+            oosSA = new ObjectOutputStream(mSlaveASocket.getOutputStream());
 
             ServerSocket slaveBSocket = new ServerSocket(9500);
             System.out.println("Master opened port 9500 for Slave B");
+            Socket mSlaveBSocket = slaveBSocket.accept();
+            System.out.println("Made connection at port 9500");
+            oisSB = new ObjectInputStream(mSlaveBSocket.getInputStream());
+            oosSB = new ObjectOutputStream(mSlaveBSocket.getOutputStream());
 
-            Thread mFromClient1 = new MasterFromClient1(incomingJobs, incJobs_LOCK, ois1, "Client 1");
-            Thread mFromClient2 = new MasterFromClient1(incomingJobs, incJobs_LOCK, ois2, "Client 2");
+            Thread mFromClient1 = new MasterFromClient1(incomingJobs, incJobs_LOCK, oisc1, "Client 1");
+            Thread mFromClient2 = new MasterFromClient1(incomingJobs, incJobs_LOCK, oisc2, "Client 2");
+            Thread balanceLoad = new BalanceLoad(totalTimeA, timeA_LOCK, totalTimeB, timeB_LOCK, incomingJobs, incJobs_LOCK, oosSA, oosSB);
             Thread mFromSlaveA = new masterFromSlaveA();
             Thread mFromSlaveB = new masterFromSlaveB();
             Thread mToClients = new masterToClients();
 
             mFromClient1.start();
             mFromClient2.start();
+            balanceLoad.start();
             mFromSlaveA.start();
             mFromSlaveB.start();
             mToClients.start();

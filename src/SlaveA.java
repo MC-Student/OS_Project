@@ -6,7 +6,8 @@ public class SlaveA {
     ArrayList<Job> completedJobsA = new ArrayList<>();
 
     public static void main(String[] args) {
-        while(true){
+        while(true)
+        {
             //create slave A threads
             Thread fromMaster = new slaveAFromMaster();
             Thread toMaster = new slaveAToMaster();
