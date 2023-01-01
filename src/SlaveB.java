@@ -22,7 +22,7 @@ public class SlaveB
 
         try
         {
-            mSBConnection = new Socket("127.0.0.1", 9600);
+            mSBConnection = new Socket("127.0.0.1", 9500);
             System.out.println("Slave B connected to Master");
         }
         catch (IOException e)
@@ -107,7 +107,7 @@ public class SlaveB
             {
                 try
                 {
-                    sleep(2);
+                    sleep(20);
                 }
                 catch (InterruptedException e)
                 {
@@ -122,11 +122,11 @@ public class SlaveB
     {
         if (currJob.getType().equalsIgnoreCase("B"))
         {
-            return 2;
+            return 2000;
         }
         else
         {
-            return 10;
+            return 10000;
         }
     }
 }

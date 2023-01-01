@@ -107,7 +107,7 @@ public class SlaveA
             {
                 try
                 {
-                    sleep(2);
+                    sleep(20);
                 }
                 catch (InterruptedException e)
                 {
@@ -123,11 +123,11 @@ public class SlaveA
     {
         if (currJob.getType().equalsIgnoreCase("A"))
         {
-            return 2;
+            return 2000;
         }
         else
         {
-            return 10;
+            return 10000;
         }
     }
 }

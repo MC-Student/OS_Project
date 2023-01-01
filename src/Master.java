@@ -53,8 +53,8 @@ public class Master
             oosSA = new ObjectOutputStream(mSlaveASocket.getOutputStream());
 
             //never gets here - why??? TODO: Fix this bug - needs to work in order to continue!!
-            ServerSocket slaveBSocket = new ServerSocket(9600);
-            System.out.println("Master opened port 9600 for Slave B");
+            ServerSocket slaveBSocket = new ServerSocket(9500);
+            System.out.println("Master opened port 9500 for Slave B");
             Socket mSlaveBSocket = slaveBSocket.accept();
             System.out.println("Made connection at port 9500");
             //oisSB = new ObjectInputStream(mSlaveBSocket.getInputStream());
