@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -6,9 +7,10 @@ import java.util.Scanner;
 
 public class Client
 {
-    public static ArrayList<Job> jobsToDo = new ArrayList<>(); //public so can be shared with its thread to master
+    public static ArrayList<Job> jobsToDo = new ArrayList<>();
     public static final Object jToDo_LOCK = new Object();
     public static ObjectOutputStream clientOutput = null;
+    public static ObjectInputStream clientInput = null;
 
     private static final Scanner keyboard = new Scanner(System.in);
     private static final String message = "Please enter a job type followed by a job ID, e.g. \"a 1234.\" Enter \"quit\" any time to exit.";
@@ -37,11 +39,20 @@ public class Client
         {
             e.printStackTrace();
         }
+        try
+        {
+            clientInput = new ObjectInputStream(mcConnection.getInputStream());
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
         Thread clientToMaster = new ClientToMaster(jobsToDo, jToDo_LOCK, clientOutput);
-        //Thread clientFromMaster = new ClientFromMaster();
+        Thread clientFromMaster = new ClientFromMaster(clientInput);
 
         clientToMaster.start();
+        clientFromMaster.start();
 
         while (true)
         {
@@ -64,23 +75,8 @@ public class Client
                         jobsToDo.add(newJob);
                     }
                 }
-                else
-                {
-                    System.out.println("Invalid input, try again");
-                }
             }
         }
-
-        /*try
-        {
-            clientToMaster.join();
-            clientFromMaster.join();
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }*/
-
     }
 
     private static boolean validInput(String input)

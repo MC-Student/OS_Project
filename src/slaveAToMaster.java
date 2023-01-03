@@ -40,6 +40,7 @@ public class slaveAToMaster extends Thread
                 try
                 {
                     toMaster.writeObject(doneJ);
+                    System.out.println("Slave A sent back to Master - completed job " + doneJ.getId());
                 }
                 catch (IOException e)
                 {
@@ -51,7 +52,7 @@ public class slaveAToMaster extends Thread
             {
                 try
                 {
-                    sleep(2);
+                    sleep(20);
                 }
                 catch (InterruptedException e)
                 {

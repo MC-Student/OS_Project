@@ -43,7 +43,6 @@ public class BalanceLoad extends Thread
 
             if(jobsToDo)
             {
-
                 String jobType;
 
                 synchronized (jobList_LOCK)

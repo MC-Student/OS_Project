@@ -8,17 +8,17 @@ import static java.lang.Thread.sleep;
 
 public class SlaveB
 {
+    static ArrayList<Job> toCompleteB = new ArrayList<>();
+    static final Object toDoB_LOCK = new Object();
+    static ArrayList<Job> completedJobsB = new ArrayList<>();
+    static final Object doneB_LOCK = new Object();
+
+    static ObjectInputStream sFromMaster;
+    static ObjectOutputStream sToMaster;
+
     public static void main(String[] args)
     {
-
-        ArrayList<Job> toCompleteB = new ArrayList<>();
-        final Object toDoB_LOCK = new Object();
-        ArrayList<Job> completedJobsB = new ArrayList<>();
-        final Object doneB_LOCK = new Object();
-
         Socket mSBConnection = null;
-        ObjectInputStream sFromMaster = null;
-        ObjectOutputStream sToMaster = null;
 
         try
         {
@@ -33,15 +33,6 @@ public class SlaveB
 
         try
         {
-            sFromMaster = new ObjectInputStream(mSBConnection.getInputStream());
-        }
-        catch (IOException e)
-        {
-            System.out.println("Slave B could not get input stream from Master");
-            e.printStackTrace();
-        }
-        try
-        {
             sToMaster = new ObjectOutputStream(mSBConnection.getOutputStream());
         }
         catch (IOException e)
@@ -49,6 +40,17 @@ public class SlaveB
             System.out.println("Slave B could not get output stream from Master");
             e.printStackTrace();
         }
+
+        try
+        {
+            sFromMaster = new ObjectInputStream(mSBConnection.getInputStream());
+        }
+        catch (IOException e)
+        {
+            System.out.println("Slave B could not get input stream from Master");
+            e.printStackTrace();
+        }
+
 
         Thread fromMaster = new slaveBFromMaster(toCompleteB, toDoB_LOCK, sFromMaster);
         Thread toMaster = new slaveBToMaster(completedJobsB, doneB_LOCK, sToMaster);

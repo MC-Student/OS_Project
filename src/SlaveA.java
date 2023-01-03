@@ -8,25 +8,36 @@ import static java.lang.Thread.sleep;
 
 public class SlaveA
 {
+    static ArrayList<Job> toCompleteA = new ArrayList<>();
+    static final Object toDoA_LOCK = new Object();
+    static ArrayList<Job> completedJobsA = new ArrayList<>();
+    static final Object doneA_LOCK = new Object();
+
+    static ObjectInputStream sFromMaster;
+    static ObjectOutputStream sToMaster;
+
     public static void main(String[] args)
     {
-        ArrayList<Job> toCompleteA = new ArrayList<>();
-        final Object toDoA_LOCK = new Object();
-        ArrayList<Job> completedJobsA = new ArrayList<>();
-        final Object doneA_LOCK = new Object();
-
         Socket mSAConnection = null;
-        ObjectInputStream sFromMaster = null;
-        ObjectOutputStream sToMaster = null;
 
         try
         {
-            mSAConnection = new Socket("127.0.0.1", 9000);
+            mSAConnection = new Socket("127.0.0.1", 9200);
             System.out.println("Slave A connected to Master");
         }
         catch (IOException e)
         {
             System.out.println("Slave A could not connect to Master");
+            e.printStackTrace();
+        }
+
+        try
+        {
+            sToMaster = new ObjectOutputStream(mSAConnection.getOutputStream());
+        }
+        catch (IOException e)
+        {
+            System.out.println("Slave A could not get output stream from Master");
             e.printStackTrace();
         }
 
@@ -39,16 +50,6 @@ public class SlaveA
             System.out.println("Slave A could not get input stream from Master");
             e.printStackTrace();
         }
-        try
-        {
-            sToMaster = new ObjectOutputStream(mSAConnection.getOutputStream());
-        }
-        catch (IOException e)
-        {
-            System.out.println("Slave A could not get output stream from Master");
-            e.printStackTrace();
-        }
-
 
         Thread fromMaster = new slaveAFromMaster(toCompleteA, toDoA_LOCK, sFromMaster);
         Thread toMaster = new slaveAToMaster(completedJobsA, doneA_LOCK, sToMaster);
@@ -116,7 +117,6 @@ public class SlaveA
                 }
             }
         }
-
     }
 
     private static int secondsToSleep(Job currJob)

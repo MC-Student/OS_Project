@@ -1,10 +1,43 @@
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 public class ClientFromMaster extends Thread
 {
-    /*
-    * takes in input stream of jobs from client
-    *
-    * This thread informs client when a job has been completed and prints to user.
+    ObjectInputStream clientInput;
 
-        Wait for input, print xyz when receive input
-    */
+    public ClientFromMaster(ObjectInputStream clientInput)
+    {
+        this.clientInput = clientInput;
+    }
+
+    @Override
+    public void run()
+    {
+        while (true)
+        {
+            Job incoming = null;
+            try
+            {
+                incoming = (Job) clientInput.readObject();
+            }
+            catch (IOException | ClassNotFoundException e)
+            {
+                e.printStackTrace();
+            }
+
+            if (incoming != null)
+            {
+                System.out.println("Job " + incoming.getId() + " was completed");
+            }
+
+            try
+            {
+                sleep(20);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
 }
