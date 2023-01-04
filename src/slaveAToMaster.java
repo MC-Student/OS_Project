@@ -35,6 +35,7 @@ public class slaveAToMaster extends Thread
                 synchronized (lock)
                 {
                     doneJ = done.get(0);
+                    done.remove(0);
                 }
 
                 try

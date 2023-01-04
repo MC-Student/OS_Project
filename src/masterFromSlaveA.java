@@ -36,8 +36,7 @@ public class masterFromSlaveA extends Thread
                 {
                     finishedJobs.add(incoming);
                 }
-                //TODO: this line prints infinitely, seems like job is never removed from list??? Not possible though, seems that it just keeps printing
-                System.out.println("Master received completed job from " + incoming.getClient() + " and added job with ID " + incoming.getId() + " to finished job list");
+                System.out.println("Master received completed job for Client " + incoming.getClient() + " and added job with ID " + incoming.getId() + " to finished job list");
             }
         }
     }
