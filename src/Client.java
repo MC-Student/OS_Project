@@ -17,12 +17,13 @@ public class Client
 
     public static void main(String[] args)
     {
+        String host = "127.0.0.1";
         int port = getPort(args);
 
         Socket mcConnection = null;
         try
         {
-            mcConnection = new Socket(args[0], port);
+            mcConnection = new Socket(host, port);
         }
         catch (IOException e)
         {
@@ -124,12 +125,12 @@ public class Client
     {
         int port = 0;
 
-        if (Integer.parseInt(args[1]) == 1)
+        if (Integer.parseInt(args[0]) == 1)
         {
             port = 6000;
         }
 
-        else if (Integer.parseInt(args[1]) == 2)
+        else if (Integer.parseInt(args[0]) == 2)
         {
             port = 7000;
         }
