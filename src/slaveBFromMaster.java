@@ -32,12 +32,12 @@ public class slaveBFromMaster extends Thread
 
             if (jobToDo != null)
             {
-                System.out.println("Slave B received job " + jobToDo.getId() + " from Master");
+                System.out.println("SLAVE B FROM MASTER: received job " + jobToDo.getId() + " of type: " + jobToDo.getType() );
                 synchronized (lock)
                 {
                     toDo.add(jobToDo);
                 }
-                System.out.println("Slave B added job " + jobToDo.getId() + " to its to-do list");
+                System.out.println("SLAVE B FROM MASTER: added job " + jobToDo.getId() + " to its to-do list");
             }
         }
     }

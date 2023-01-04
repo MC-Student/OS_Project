@@ -23,11 +23,11 @@ public class SlaveB
         try
         {
             mSBConnection = new Socket("127.0.0.1", 9500);
-            System.out.println("Slave B connected to Master");
+            System.out.println("SLAVE B: connected to Master");
         }
         catch (IOException e)
         {
-            System.out.println("Slave B could not connect to Master");
+            System.out.println("SLAVE B: could not connect to Master");
             e.printStackTrace();
         }
 
@@ -37,7 +37,7 @@ public class SlaveB
         }
         catch (IOException e)
         {
-            System.out.println("Slave B could not get output stream from Master");
+            System.out.println("SLAVE B: could not get output stream from Master");
             e.printStackTrace();
         }
 
@@ -47,7 +47,7 @@ public class SlaveB
         }
         catch (IOException e)
         {
-            System.out.println("Slave B could not get input stream from Master");
+            System.out.println("SLAVE B: could not get input stream from Master");
             e.printStackTrace();
         }
 
@@ -77,7 +77,7 @@ public class SlaveB
                 {
                     doNow = toCompleteB.get(0);
                 }
-                System.out.println("Slave B got next job from to-do list");
+                System.out.println("SLAVE B: got next job of type" + doNow.getType() + " from to-do list");
 
                 int sleepLength = secondsToSleep(doNow);
 
@@ -87,11 +87,11 @@ public class SlaveB
                 }
                 catch (InterruptedException e)
                 {
-                    System.out.println("Slave B did not sleep to complete job " + doNow.getId());
+                    System.out.println("SLAVE B: did not sleep to complete job " + doNow.getId());
                     e.printStackTrace();
                 }
 
-                System.out.println("Slave B woke up - job " + doNow.getId() + " is complete");
+                System.out.println("SLAVE B: woke up - job " + doNow.getId() + " is complete");
 
                 synchronized (doneB_LOCK)
                 {
@@ -102,7 +102,7 @@ public class SlaveB
                     toCompleteB.remove(0);
                 }
 
-                System.out.println("Slave B added job " + doNow.getId() + " to completed list");
+                System.out.println("SLAVE B: added job " + doNow.getId() + " to completed list");
             }
 
             else
@@ -113,7 +113,7 @@ public class SlaveB
                 }
                 catch (InterruptedException e)
                 {
-                    System.out.println("Could not sleep");
+                    System.out.println("SLAVE B: Could not sleep");
                     e.printStackTrace();
                 }
             }

@@ -36,7 +36,7 @@ public class masterFromSlaveA extends Thread
                 {
                     finishedJobs.add(incoming);
                 }
-                System.out.println("Master received completed job for Client " + incoming.getClient() + " and added job with ID " + incoming.getId() + " to finished job list");
+                System.out.println("FROM SLAVE A TO MASTER: 1. received completed job for Client # " + incoming.getClient() + " 2. added job with ID " + incoming.getId() + " to finished job list");
             }
         }
     }

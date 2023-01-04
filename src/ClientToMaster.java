@@ -39,11 +39,11 @@ public class ClientToMaster extends Thread
                     try
                     {
                         oos.writeObject(currJobToSend);
-                        System.out.println("Job " + currJobToSend.getId() + " sent to Master");
+                        System.out.println("FROM CLIENT TO MASTER: Job " + currJobToSend.getId() + " sent");
                     }
                     catch (IOException e)
                     {
-                        System.out.println("Could not send job with ID " + currJobToSend.getId());
+                        System.out.println("FROM CLIENT TO MASTER: Could not send job with ID " + currJobToSend.getId());
                         e.printStackTrace();
                     }
                 }
@@ -57,7 +57,7 @@ public class ClientToMaster extends Thread
                 }
                 catch (InterruptedException e)
                 {
-                    System.out.println("Could not sleep");
+                    System.out.println("FROM CLIENT TO MASTER: Could not sleep");
                     e.printStackTrace();
                 }
             }

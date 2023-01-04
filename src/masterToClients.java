@@ -54,7 +54,7 @@ public class masterToClients extends Thread
                         }
                         catch (IOException e)
                         {
-                            System.out.println("Master could not send complete job with ID " + finished.getId() + " to Client " + client);
+                            System.out.println("MASTER TO CLIENT: could not send complete job # " + finished.getId() + " to Client " + client);
                             e.printStackTrace();
                         }
                         finishedJobs.remove(0);
@@ -70,7 +70,7 @@ public class masterToClients extends Thread
                         }
                         catch (IOException e)
                         {
-                            System.out.println("Master could not send complete job with ID " + finished.getId() + " to Client " + client);
+                            System.out.println("MASTER TO CLIENT: could not send complete job # " + finished.getId() + " to Client " + client);
                             e.printStackTrace();
                         }
                         finishedJobs.remove(0);
@@ -86,7 +86,7 @@ public class masterToClients extends Thread
                 }
                 catch (InterruptedException e)
                 {
-                    System.out.println("Could not sleep");
+                    System.out.println("MASTER TO CLIENT: Could not sleep");
                     e.printStackTrace();
                 }
             }

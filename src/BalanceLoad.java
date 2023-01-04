@@ -32,7 +32,6 @@ public class BalanceLoad extends Thread
         while(true)
         {
             boolean jobsToDo = true;
-
             synchronized (jobList_LOCK)
             {
                 if (jobsToAssign.isEmpty())
@@ -86,7 +85,7 @@ public class BalanceLoad extends Thread
                 }
                 catch (InterruptedException e)
                 {
-                    System.out.println("Could not sleep");
+                    System.out.println("SLAVE A: Could not sleep");
                     e.printStackTrace();
                 }
             }
@@ -100,7 +99,7 @@ public class BalanceLoad extends Thread
             synchronized (timeA_LOCK)
             {
                 totalTimeA += 2;
-                System.out.println("Added 2 ms to total sleep time of slave A");
+                System.out.println("SLAVE A: slept additional 2 ms");
             }
 
             Job sending;
@@ -109,13 +108,13 @@ public class BalanceLoad extends Thread
             {
                 sending = jobsToAssign.get(0);
                 jobsToAssign.remove(0);
-                System.out.println("Removed job to send from original list");
+                System.out.println("SLAVE A: Removed job to send from original list");
             }
 
             try
             {
                 toSlaveA.writeObject(sending);
-                System.out.println("Sent job " + sending.getId() + " to optimized slave");
+                System.out.println("SLAVE A: Sent job " + sending.getId() + " to optimized SLAVE A");
             }
             catch (IOException e)
             {
@@ -128,7 +127,7 @@ public class BalanceLoad extends Thread
             synchronized (timeB_LOCK)
             {
                 totalTimeB += 2;
-                System.out.println("Added 2 ms to total sleep time of slave B");
+                System.out.println("SLAVE B: slept additional 2 ms");
             }
 
             Job sending;
@@ -137,13 +136,13 @@ public class BalanceLoad extends Thread
             {
                 sending = jobsToAssign.get(0);
                 jobsToAssign.remove(0);
-                System.out.println("Removed job to send from original list");
+                System.out.println("SLAVE B: Removed job to send from original list");
             }
 
             try
             {
                 toSlaveB.writeObject(sending);
-                System.out.println("Sent job " + sending.getId() + " to optimized slave");
+                System.out.println("SLAVE B: Sent job " + sending.getId() + " to optimized SLAVE B");
             }
             catch (IOException e)
             {
@@ -159,7 +158,7 @@ public class BalanceLoad extends Thread
             synchronized (timeB_LOCK)
             {
                 totalTimeB += 10;
-                System.out.println("Added 10 ms to total sleep time of slave B");
+                System.out.println("SLAVE B: slept additional 10 ms");
             }
 
             Job sending;
@@ -168,13 +167,13 @@ public class BalanceLoad extends Thread
             {
                 sending = jobsToAssign.get(0);
                 jobsToAssign.remove(0);
-                System.out.println("Removed job to send from original list");
+                System.out.println("SLAVE B: Removed job to send from original list");
             }
 
             try
             {
                 toSlaveB.writeObject(sending);
-                System.out.println("Sent job " + sending.getId() + " to NON-optimized slave");
+                System.out.println("SLAVE B: Sent job " + sending.getId() + " to NON-optimized SLAVE B");
             }
             catch (IOException e)
             {
@@ -187,7 +186,7 @@ public class BalanceLoad extends Thread
             synchronized (timeA_LOCK)
             {
                 totalTimeA += 10;
-                System.out.println("Added 10 ms to total sleep time of slave A");
+                System.out.println("SLAVE A: slept an additional 10 ms");
             }
 
             Job sending;
@@ -196,13 +195,13 @@ public class BalanceLoad extends Thread
             {
                 sending = jobsToAssign.get(0);
                 jobsToAssign.remove(0);
-                System.out.println("Removed job to send from original list");
+                System.out.println("SLAVE A: Removed job to send from original list");
             }
 
             try
             {
                 toSlaveA.writeObject(sending);
-                System.out.println("Sent job " + sending.getId() + " to NON-optimized slave");
+                System.out.println("SLAVE A: Sent job " + sending.getId() + " to NON-optimized SLAVE A");
             }
             catch (IOException e)
             {

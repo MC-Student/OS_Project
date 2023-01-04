@@ -32,30 +32,30 @@ public class Master
         try
         {
             ServerSocket client1Socket = new ServerSocket(6000);
-            System.out.println("Master opened port 6000 for client 1");
+            System.out.println("MASTER: opened port 6000 for client 1");
             Socket mClientSocket1 = client1Socket.accept();
-            System.out.println("Made connection at port 6000");
+            System.out.println("MASTER: Made connection at port 6000");
             oisc1 = new ObjectInputStream(mClientSocket1.getInputStream());
             oosc1 = new ObjectOutputStream(mClientSocket1.getOutputStream());
 
             ServerSocket client2Socket = new ServerSocket(7000);
-            System.out.println("Master opened port 7000 for client 2");
+            System.out.println("MASTER: opened port 7000 for client 2");
             Socket mClientSocket2 = client2Socket.accept();
-            System.out.println("Made connection at port 7000");
+            System.out.println("MASTER: Made connection at port 7000");
             oisc2 = new ObjectInputStream(mClientSocket2.getInputStream());
             oosc2 = new ObjectOutputStream(mClientSocket2.getOutputStream());
 
             ServerSocket slaveASocket = new ServerSocket(9200);
-            System.out.println("Master opened port 9200 for Slave A");
+            System.out.println("MASTER: opened port 9200 for Slave A");
             Socket mSlaveASocket = slaveASocket.accept();
-            System.out.println("Made connection at port 9200");
+            System.out.println("MASTER: Made connection at port 9200");
             oisSA = new ObjectInputStream(mSlaveASocket.getInputStream());
             oosSA = new ObjectOutputStream(mSlaveASocket.getOutputStream());
 
             ServerSocket slaveBSocket = new ServerSocket(9500);
-            System.out.println("Master opened port 9500 for Slave B");
+            System.out.println("MASTER: opened port 9500 for Slave B");
             Socket mSlaveBSocket = slaveBSocket.accept();
-            System.out.println("Made connection at port 9500");
+            System.out.println("MASTER:  connection at port 9500");
             oisSB = new ObjectInputStream(mSlaveBSocket.getInputStream());
             oosSB = new ObjectOutputStream(mSlaveBSocket.getOutputStream());
 
@@ -66,7 +66,7 @@ public class Master
             Thread mFromSlaveB = new masterFromSlaveB(finishedJobs, finJobs_LOCK, oisSB);
             Thread mToClients = new masterToClients(oosc1, oosc2, finishedJobs, finJobs_LOCK);
 
-            System.out.println("created threads");
+            System.out.println("MASTER: created threads");
 
             mFromClient1.start();
             mFromClient2.start();

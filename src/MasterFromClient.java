@@ -37,7 +37,7 @@ public class MasterFromClient extends Thread
                 synchronized (ij_LOCK)
                 {
                     incomingJobs.add(incoming);
-                    System.out.println("Received job from " + client + " and added job with ID " + incoming.getId() + " to list");
+                    System.out.println("MASTER: Received job from client: " + client + " MASTER: added job # " + incoming.getId() + " to list");
                 }
             }
         }

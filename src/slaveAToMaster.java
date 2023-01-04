@@ -41,11 +41,11 @@ public class slaveAToMaster extends Thread
                 try
                 {
                     toMaster.writeObject(doneJ);
-                    System.out.println("Slave A sent back to Master - completed job " + doneJ.getId());
+                    System.out.println("SLAVE A TO MASTER: sent back to Master - completed job " + doneJ.getId());
                 }
                 catch (IOException e)
                 {
-                    System.out.println("Slave A could not send back completed job " + doneJ.getId() + " to Master");
+                    System.out.println("SLAVE A TO MASTER: could not send back completed job " + doneJ.getId() + " to Master");
                     e.printStackTrace();
                 }
             }
@@ -57,7 +57,7 @@ public class slaveAToMaster extends Thread
                 }
                 catch (InterruptedException e)
                 {
-                    System.out.println("Could not sleep");
+                    System.out.println("SLAVE A TO MASTER: Could not sleep");
                     e.printStackTrace();
                 }
             }

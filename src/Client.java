@@ -13,7 +13,7 @@ public class Client
     public static ObjectInputStream clientInput = null;
 
     private static final Scanner keyboard = new Scanner(System.in);
-    private static final String message = "Please enter a job type followed by a job ID, e.g. \"a 1234.\" Enter \"quit\" any time to exit.";
+    private static final String message = "USER: Please enter a job type followed by a job ID, e.g. \"a 1234.\" Enter \"quit\" any time to exit.";
 
     public static void main(String[] args)
     {
@@ -27,7 +27,7 @@ public class Client
         catch (IOException e)
         {
             e.printStackTrace();
-            System.out.println("Could not connect");
+            System.out.println("CLIENT could not connect");
             System.exit(9);
         }
 
@@ -59,7 +59,7 @@ public class Client
             System.out.println(message);
             String input = keyboard.nextLine();
 
-            if (input.equalsIgnoreCase("quit"))
+            if (input.equalsIgnoreCase("ERROR: quit"))
             {
                 System.exit(3);
             }
@@ -87,7 +87,7 @@ public class Client
 
         if (input.equals(" ") || input.equals(""))
         {
-            System.out.println("User input null, please enter valid input: ");// null error message, ignore input
+            System.out.println("ERROR: User input null, please enter valid input: ");// null error message, ignore input
         }
         else
         {
@@ -97,7 +97,7 @@ public class Client
                 {
                     if (userInfo.length < 2)
                     {
-                        System.out.println("Not enough information - enter a type and ID");
+                        System.out.println("ERROR: Not enough information - enter a type and ID");
                     }
                     else
                     {
@@ -107,13 +107,13 @@ public class Client
                 }
                 catch (NumberFormatException e)
                 {
-                    System.out.println("Invalid id given input: " + userInfo[1]);// invalid id error message, ignore input
+                    System.out.println("ERROR: Invalid id given input: " + userInfo[1]);// invalid id error message, ignore input
                 }
             }
 
             else
             {
-                System.out.println("Invalid job type: " + userInfo[0] + "; must be of type A or B");
+                System.out.println("ERROR: Invalid job type: " + userInfo[0] + "; must be of type A or B");
             }
         }
 
@@ -136,7 +136,7 @@ public class Client
 
         else
         {
-            System.out.println("Invalid client ID entered, unable to connect to Master");
+            System.out.println("ERROR: Invalid client ID entered, unable to connect to Master");
             System.exit(1);
         }
         return port;

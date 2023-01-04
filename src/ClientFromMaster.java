@@ -27,7 +27,7 @@ public class ClientFromMaster extends Thread
 
             if (incoming != null)
             {
-                System.out.println("Job " + incoming.getId() + " was completed");
+                System.out.println("TO CLIENT FROM MASTER: Job " + incoming.getId() + " was completed");
             }
 
             try
