@@ -60,7 +60,7 @@ public class Client
             System.out.println(message);
             String input = keyboard.nextLine();
 
-            if (input.equalsIgnoreCase("ERROR: quit"))
+            if (input.equalsIgnoreCase("quit"))
             {
                 System.exit(3);
             }
